@@ -32,113 +32,138 @@ import com.devonfw.application.jtqj.queuemanagement.logic.impl.usecase.UcManageQ
 @Transactional
 public class UcManageAccessCodeImpl extends AbstractAccessCodeUc implements UcManageAccessCode {
 
-	@Inject
-	private Queuemanagement queuemanagement;
+  @Inject
+  private Queuemanagement queuemanagement;
 
-	@Inject
-	private UcFindAccessCode ucFindAccessCode;
+  @Inject
+  private UcFindAccessCode ucFindAccessCode;
 
-	/** Logger instance. */
-	private static final Logger LOG = LoggerFactory.getLogger(UcManageQueueImpl.class);
+  private int a, b, c, d;
 
-	@Override
-	public Boolean deleteAccessCode(long accessCodeId) {
+  /** Logger instance. */
+  private static final Logger LOG = LoggerFactory.getLogger(UcManageQueueImpl.class);
 
-		// We get the queue, remove one customer and update it
-		AccessCodeEntity accessCodeEntity = getAccessCodeRepository().find(accessCodeId);
+  @Override
+  public Boolean deleteAccessCode(long accessCodeId) {
 
-		QueueEto queueEto = getBeanMapper().map(accessCodeEntity.getQueue(),QueueEto.class);
-		int customerRemove = queueEto.getCustomers() - 1;
-		queueEto.setCustomers(customerRemove);
-		getQueuemanagement().saveQueue(queueEto);
+    // Complexity > 26
+    if (this.a > this.b && this.b > this.c && this.c > this.d) {
+    } else if (this.d > this.c || this.c > this.b || this.b > this.a) {
+      LOG.debug("Test");
+    } else if (this.a == this.b || this.b == this.c && this.c == this.d) {
+      LOG.debug("Test");
+    } else if (this.a == this.b && this.b == this.c || this.c == this.d) {
+      LOG.debug("Test");
+    } else if (this.a > this.b && this.b > this.c && this.c > this.d || this.d > this.c) {
+      LOG.debug("Test");
+    } else if (this.a <= this.d || this.c >= this.b && this.b > this.d || this.a == 5) {
+      LOG.debug("Test");
+    } else if (this.a == this.b || this.b == this.c && this.c == this.d) {
+      LOG.debug("Test");
+    } else if (this.d > this.c || this.c > this.b || this.b > this.a) {
+      LOG.debug("Test");
+    } else {
+      LOG.debug("Test");
+    }
 
-		LOG.debug("The queue with id '{}' has decreased its customers to: {}.", queueEto.getId(),
-				queueEto.getCustomers());
+    // We get the queue, remove one customer and update it
+    AccessCodeEntity accessCodeEntity = getAccessCodeRepository().find(accessCodeId);
 
-		// we delete the accesscode
-		getAccessCodeRepository().delete(accessCodeEntity);
-		LOG.debug("The accesscode with id '{}' has been deleted.", accessCodeId);
+    QueueEto queueEto = getBeanMapper().map(accessCodeEntity.getQueue(), QueueEto.class);
+    int customerRemove = queueEto.getCustomers() - 1;
+    queueEto.setCustomers(customerRemove);
+    getQueuemanagement().saveQueue(queueEto);
 
-		return true;
-	}
+    LOG.debug("The queue with id '{}' has decreased its customers to: {}.", queueEto.getId(), queueEto.getCustomers());
 
-	@Override
-	public AccessCodeEto saveAccessCode(AccessCodeEto accessCodeEto) {
-		// We make sure the object is not null
-		Objects.requireNonNull(accessCodeEto, "UcManageAccessImpl accessCode null");
+    // we delete the accesscode
+    getAccessCodeRepository().delete(accessCodeEntity);
+    LOG.debug("The accesscode with id '{}' has been deleted.", accessCodeId);
 
-		AccessCodeEntity accessCodeEntity = getBeanMapper().map(accessCodeEto, AccessCodeEntity.class);
+    return true;
+  }
 
-		long queueEntityId = accessCodeEntity.getQueueId();
+  @Override
+  public AccessCodeEto saveAccessCode(AccessCodeEto accessCodeEto) {
 
-		AccessCodeSearchCriteriaTo accessCodeSearchCriteriaTo = new AccessCodeSearchCriteriaTo();
-		accessCodeSearchCriteriaTo.setQueueId(queueEntityId);
-		Pageable pageable = PageRequest.of(0, 1000);
-		accessCodeSearchCriteriaTo.setPageable(pageable);
+    // We make sure the object is not null
+    Objects.requireNonNull(accessCodeEto, "UcManageAccessImpl accessCode null");
 
-		// we get the list of ctos that are in the same queue than our eto
-		List<AccessCodeCto> accessCodeCtosInQueue = getUcFindAccessCode().findAccessCodeCtos(accessCodeSearchCriteriaTo)
-				.getContent();
+    AccessCodeEntity accessCodeEntity = getBeanMapper().map(accessCodeEto, AccessCodeEntity.class);
 
-		// if theres no ctos we set the ticket to the first code
-		// else we get the digit of the last ticket in the list and generate a new code
-		// for the ticket
-		if (accessCodeCtosInQueue.isEmpty()) {
-			accessCodeEntity.setTicketNumber("Q000");
-		} else {
-			AccessCodeEto lastAccessCode = accessCodeCtosInQueue.get(accessCodeCtosInQueue.size() - 1).getAccessCode();
-			int lastTicketDigit = Integer.parseInt(lastAccessCode.getTicketNumber().substring(1));
-			accessCodeEntity.setTicketNumber(generateTicketCode(lastTicketDigit));
-		}
-		// we set the creation time, startTime and endTime
-		accessCodeEntity.setCreationTime(Timestamp.from(Instant.now()));
-		accessCodeEntity.setStartTime(null);
-		accessCodeEntity.setEndTime(null);
-		// save the AccessCode
-		AccessCodeEntity accessCodeEntitySaved = getAccessCodeRepository().save(accessCodeEntity);
-		LOG.debug("The accesscode with id '{}' has been saved.", accessCodeEntitySaved.getId());
-		QueueEntity queueEntity = getBeanMapper().map(getQueuemanagement().findQueue(queueEntityId), QueueEntity.class);
+    long queueEntityId = accessCodeEntity.getQueueId();
 
-		// we add one customer to the queue and update it
-		int customerAdd = queueEntity.getCustomers() + 1;
-		queueEntity.setCustomers(customerAdd);
-		QueueEto queueEtoSaved = getQueuemanagement().saveQueue(getBeanMapper().map(queueEntity, QueueEto.class));
+    AccessCodeSearchCriteriaTo accessCodeSearchCriteriaTo = new AccessCodeSearchCriteriaTo();
+    accessCodeSearchCriteriaTo.setQueueId(queueEntityId);
+    Pageable pageable = PageRequest.of(0, 1000);
+    accessCodeSearchCriteriaTo.setPageable(pageable);
 
-		LOG.debug("The queue with id '{}' has increased its customers to: {}.", queueEtoSaved.getId(),
-				queueEtoSaved.getCustomers());
+    // we get the list of ctos that are in the same queue than our eto
+    List<AccessCodeCto> accessCodeCtosInQueue = getUcFindAccessCode().findAccessCodeCtos(accessCodeSearchCriteriaTo)
+        .getContent();
 
-		return getBeanMapper().map(accessCodeEntity, AccessCodeEto.class);
-	}
+    // if theres no ctos we set the ticket to the first code
+    // else we get the digit of the last ticket in the list and generate a new code
+    // for the ticket
+    if (accessCodeCtosInQueue.isEmpty()) {
+      accessCodeEntity.setTicketNumber("Q000");
+    } else {
+      AccessCodeEto lastAccessCode = accessCodeCtosInQueue.get(accessCodeCtosInQueue.size() - 1).getAccessCode();
+      int lastTicketDigit = Integer.parseInt(lastAccessCode.getTicketNumber().substring(1));
+      accessCodeEntity.setTicketNumber(generateTicketCode(lastTicketDigit));
+    }
+    // we set the creation time, startTime and endTime
+    accessCodeEntity.setCreationTime(Timestamp.from(Instant.now()));
+    accessCodeEntity.setStartTime(null);
+    accessCodeEntity.setEndTime(null);
+    // save the AccessCode
+    AccessCodeEntity accessCodeEntitySaved = getAccessCodeRepository().save(accessCodeEntity);
+    LOG.debug("The accesscode with id '{}' has been saved.", accessCodeEntitySaved.getId());
+    QueueEntity queueEntity = getBeanMapper().map(getQueuemanagement().findQueue(queueEntityId), QueueEntity.class);
 
-	/**
-	 * Generates a new ticked code using the ticket digit of the last codeaccess
-	 * created
-	 *
-	 * @param lastTicketDigit the int of the last codeaccess created
-	 * @return the String with the new ticket code (example: "Q005");
-	 */
-	public String generateTicketCode(int lastTicketDigit) {
-		int newTicketDigit = lastTicketDigit + 1;
-		String newTicketCode = "";
-		if (newTicketDigit == 1000) {
-			newTicketCode = "Q000";
-		} else {
-			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.append(newTicketDigit);
-			while (stringBuilder.length() < 3) {
-				stringBuilder.insert(0, "0");
-			}
-			stringBuilder.insert(0, "Q");
-			newTicketCode = stringBuilder.toString();
-		}
-		return newTicketCode;
-	}
+    // we add one customer to the queue and update it
+    int customerAdd = queueEntity.getCustomers() + 1;
+    queueEntity.setCustomers(customerAdd);
+    QueueEto queueEtoSaved = getQueuemanagement().saveQueue(getBeanMapper().map(queueEntity, QueueEto.class));
 
-	public Queuemanagement getQueuemanagement() {
-		return this.queuemanagement;
-	}
-	public UcFindAccessCode getUcFindAccessCode(){
-		return this.ucFindAccessCode;
-	}
+    LOG.debug("The queue with id '{}' has increased its customers to: {}.", queueEtoSaved.getId(),
+        queueEtoSaved.getCustomers());
+
+    return getBeanMapper().map(accessCodeEntity, AccessCodeEto.class);
+  }
+
+  /**
+   * Generates a new ticked code using the ticket digit of the last codeaccess created
+   *
+   * @param lastTicketDigit the int of the last codeaccess created
+   * @return the String with the new ticket code (example: "Q005");
+   */
+  public String generateTicketCode(int lastTicketDigit) {
+
+    int newTicketDigit = lastTicketDigit + 1;
+    String newTicketCode = "";
+    if (newTicketDigit == 1000) {
+      newTicketCode = "Q000";
+    } else {
+      StringBuilder stringBuilder = new StringBuilder();
+      stringBuilder.append(newTicketDigit);
+      while (stringBuilder.length() < 3) {
+        stringBuilder.insert(0, "0");
+      }
+      stringBuilder.insert(0, "Q");
+      newTicketCode = stringBuilder.toString();
+    }
+    return newTicketCode;
+  }
+
+  public Queuemanagement getQueuemanagement() {
+
+    return this.queuemanagement;
+  }
+
+  public UcFindAccessCode getUcFindAccessCode() {
+
+    return this.ucFindAccessCode;
+  }
 
 }

@@ -18,32 +18,43 @@ import com.devonfw.application.jtqj.queuemanagement.logic.api.usecase.UcManageQu
 @Named
 public class QueuemanagementImpl extends AbstractComponentFacade implements Queuemanagement {
 
-	@Inject
-	private UcFindQueue ucFindQueue;
+  @Inject
+  private UcFindQueue ucFindQueue;
 
-	@Inject
-	private UcManageQueue ucManageQueue;
+  @Inject
+  private UcManageQueue ucManageQueue;
 
-	@Override
-	public QueueEto findQueue(long id) {
+  private int a, b, c, d;
 
-		return this.ucFindQueue.findQueue(id);
-	}
+  @Override
+  public QueueEto findQueue(long id) {
 
-	@Override
-	public Page<QueueEto> findQueues(QueueSearchCriteriaTo criteria) {
-		return this.ucFindQueue.findQueues(criteria);
-	}
+    // Complexity 11 <= x <= 25
+    if (this.a > this.b && this.b > this.c && this.c > this.d) {
+    } else if (this.d > this.c || this.c > this.b || this.b > this.a) {
+    } else if (this.a == this.b || this.b == this.c && this.c == this.d) {
+    } else if (this.a == this.b && this.b == this.c || this.c == this.d) {
+    } else if (this.a >= this.b && this.b >= this.c && this.c > this.d) {
+    }
 
-	@Override
-	public QueueEto saveQueue(QueueEto queue) {
+    return this.ucFindQueue.findQueue(id);
+  }
 
-		return this.ucManageQueue.saveQueue(queue);
-	}
+  @Override
+  public Page<QueueEto> findQueues(QueueSearchCriteriaTo criteria) {
 
-	@Override
-	public boolean deleteQueue(long id) {
+    return this.ucFindQueue.findQueues(criteria);
+  }
 
-		return this.ucManageQueue.deleteQueue(id);
-	}
+  @Override
+  public QueueEto saveQueue(QueueEto queue) {
+
+    return this.ucManageQueue.saveQueue(queue);
+  }
+
+  @Override
+  public boolean deleteQueue(long id) {
+
+    return this.ucManageQueue.deleteQueue(id);
+  }
 }
